@@ -3,17 +3,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   
-  modules: ['@primevue/nuxt-module'],
-  
-  primevue: {
-    options: {
-      ripple: true
-    }
-  },
-  
   css: [
-    'primeicons/primeicons.css',
-    '~/assets/css/theme.css'
+    '@mdi/font/css/materialdesignicons.css',
+    '@ntohq/buefy-next/dist/buefy.css'
   ],
   
   runtimeConfig: {

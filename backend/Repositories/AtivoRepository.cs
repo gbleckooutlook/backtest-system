@@ -73,6 +73,35 @@ public class AtivoRepository
         await connection.ExecuteAsync(sql, candles);
     }
 
+    public async Task AtualizarAtivoAsync(Ativo ativo)
+    {
+        using var connection = GetConnection();
+        var sql = @"
+            UPDATE Ativos
+            SET Nome = @Nome,
+                Mercado = @Mercado,
+                Codigo = @Codigo,
+                Timeframe = @Timeframe,
+                NomeArquivoCsv = @NomeArquivoCsv
+            WHERE Id = @Id";
+        
+        await connection.ExecuteAsync(sql, ativo);
+    }
+
+    public async Task DeletarAtivoAsync(int id)
+    {
+        using var connection = GetConnection();
+        var sql = "DELETE FROM Ativos WHERE Id = @Id";
+        await connection.ExecuteAsync(sql, new { Id = id });
+    }
+
+    public async Task DeletarCandlesPorAtivoAsync(int ativoId)
+    {
+        using var connection = GetConnection();
+        var sql = "DELETE FROM Candles WHERE AtivoId = @AtivoId";
+        await connection.ExecuteAsync(sql, new { AtivoId = ativoId });
+    }
+
     public async Task InicializarBancoDadosAsync()
     {
         using var connection = GetConnection();

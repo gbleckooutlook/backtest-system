@@ -71,6 +71,60 @@ public class AtivoService
         return await _repository.ListarAtivosAsync(page, pageSize);
     }
 
+    public async Task<Ativo?> ObterAtivoPorIdAsync(int id)
+    {
+        return await _repository.ObterAtivoPorIdAsync(id);
+    }
+
+    public async Task AtualizarAtivoAsync(int id, CriarAtivoDto dto)
+    {
+        var ativoExistente = await _repository.ObterAtivoPorIdAsync(id);
+        if (ativoExistente == null)
+        {
+            throw new ArgumentException("Ativo não encontrado");
+        }
+
+        // Atualizar dados do ativo
+        ativoExistente.Nome = dto.Nome;
+        ativoExistente.Mercado = dto.Mercado;
+        ativoExistente.Codigo = dto.Codigo;
+        ativoExistente.Timeframe = dto.Timeframe;
+
+        await _repository.AtualizarAtivoAsync(ativoExistente);
+
+        // Se forneceu novo CSV, deletar candles antigos e inserir novos
+        if (dto.ArquivoCsv != null && dto.ArquivoCsv.Length > 0)
+        {
+            _logger.LogInformation($"Substituindo candles do ativo {id}");
+            await _repository.DeletarCandlesPorAtivoAsync(id);
+            
+            var candles = await ProcessarCsvAsync(dto.ArquivoCsv, id);
+            await _repository.InserirCandlesAsync(candles);
+            
+            ativoExistente.NomeArquivoCsv = dto.ArquivoCsv.FileName;
+            await _repository.AtualizarAtivoAsync(ativoExistente);
+            
+            _logger.LogInformation($"Processados {candles.Count} novos candles para o ativo {id}");
+        }
+    }
+
+    public async Task DeletarAtivoAsync(int id)
+    {
+        var ativo = await _repository.ObterAtivoPorIdAsync(id);
+        if (ativo == null)
+        {
+            throw new ArgumentException("Ativo não encontrado");
+        }
+
+        // Deletar candles primeiro (cascata)
+        await _repository.DeletarCandlesPorAtivoAsync(id);
+        
+        // Deletar ativo
+        await _repository.DeletarAtivoAsync(id);
+        
+        _logger.LogInformation($"Ativo {id} e seus candles foram deletados");
+    }
+
     private async Task<List<Candle>> ProcessarCsvAsync(IFormFile arquivo, int ativoId)
     {
         var candles = new List<Candle>();

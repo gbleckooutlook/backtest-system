@@ -58,12 +58,53 @@ public class AtivosController : ControllerBase
     {
         try
         {
-            // Implementar quando necessário
-            return NotFound(new { erro = "Ativo não encontrado" });
+            var ativo = await _ativoService.ObterAtivoPorIdAsync(id);
+            if (ativo == null)
+                return NotFound(new { erro = "Ativo não encontrado" });
+            
+            return Ok(ativo);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao obter ativo");
+            return StatusCode(500, new { erro = "Erro interno ao processar requisição" });
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> AtualizarAtivo(int id, [FromForm] CriarAtivoDto dto)
+    {
+        try
+        {
+            await _ativoService.AtualizarAtivoAsync(id, dto);
+            return Ok(new { mensagem = "Ativo atualizado com sucesso" });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { erro = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao atualizar ativo");
+            return StatusCode(500, new { erro = "Erro interno ao processar requisição" });
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeletarAtivo(int id)
+    {
+        try
+        {
+            await _ativoService.DeletarAtivoAsync(id);
+            return Ok(new { mensagem = "Ativo deletado com sucesso" });
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { erro = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao deletar ativo");
             return StatusCode(500, new { erro = "Erro interno ao processar requisição" });
         }
     }

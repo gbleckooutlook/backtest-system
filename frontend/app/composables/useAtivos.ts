@@ -30,7 +30,6 @@ export const useAtivos = () => {
 
   const criarAtivo = async (formData: FormData) => {
     try {
-      // Usar fetch nativo para upload de arquivo
       const response = await fetch(`${baseURL}/api/ativos`, {
         method: 'POST',
         body: formData,
@@ -49,9 +48,61 @@ export const useAtivos = () => {
     }
   }
 
+  const obterAtivo = async (id: number): Promise<Ativo> => {
+    try {
+      const response = await api<Ativo>(`/api/ativos/${id}`)
+      return response
+    } catch (error) {
+      console.error('Erro ao obter ativo:', error)
+      throw error
+    }
+  }
+
+  const editarAtivo = async (id: number, formData: FormData) => {
+    try {
+      const response = await fetch(`${baseURL}/api/ativos/${id}`, {
+        method: 'PUT',
+        body: formData,
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.erro || 'Erro ao editar ativo')
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Erro ao editar ativo:', error)
+      throw error
+    }
+  }
+
+  const deletarAtivo = async (id: number) => {
+    try {
+      const response = await fetch(`${baseURL}/api/ativos/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.erro || 'Erro ao deletar ativo')
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Erro ao deletar ativo:', error)
+      throw error
+    }
+  }
+
   return {
     listarAtivos,
-    criarAtivo
+    criarAtivo,
+    obterAtivo,
+    editarAtivo,
+    deletarAtivo
   }
 }
 

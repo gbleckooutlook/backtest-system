@@ -8,12 +8,12 @@
           </b-button>
         </div>
         <div class="level-item">
-          <h1 class="title">Criar Ativo</h1>
+          <h1 class="title">Editar Ativo</h1>
         </div>
       </div>
     </div>
 
-    <div class="box">
+    <div class="box" v-if="!loadingAtivo">
       <form @submit.prevent="salvarAtivo">
         <b-field
           label="Nome do Ativo"
@@ -74,7 +74,7 @@
           </b-select>
         </b-field>
 
-        <b-field label="Arquivo CSV">
+        <b-field label="Arquivo CSV (opcional - deixe em branco para manter o atual)">
           <b-field class="file mb-5">
             <b-upload
               v-model="form.arquivo"
@@ -82,11 +82,11 @@
             >
               <span class="file-cta">
                 <b-icon icon="upload"></b-icon>
-                <span class="file-label">{{ form.arquivo ? form.arquivo.name : 'Escolher arquivo' }}</span>
+                <span class="file-label">{{ form.arquivo ? form.arquivo.name : 'Escolher novo arquivo' }}</span>
               </span>
             </b-upload>
           </b-field>
-          <p class="help">Formato esperado: Data, Abertura, Máxima, Mínima, Fechamento, Contador de Candles</p>
+          <p class="help">Se enviar um novo CSV, todos os candles antigos serão substituídos</p>
         </b-field>
 
         <b-field grouped class="mt-5">
@@ -110,6 +110,10 @@
         </b-field>
       </form>
     </div>
+
+    <div class="box" v-else>
+      <b-loading :is-full-page="false" v-model="loadingAtivo" :can-cancel="false"></b-loading>
+    </div>
   </div>
 </template>
 
@@ -118,9 +122,12 @@ definePageMeta({
   layout: 'default'
 })
 
+const route = useRoute()
 const router = useRouter()
-const { criarAtivo } = useAtivos()
+const { obterAtivo, editarAtivo } = useAtivos()
 const Toast = useBuefyToast()
+
+const ativoId = computed(() => parseInt(route.params.id as string))
 
 const form = ref({
   nome: '',
@@ -132,6 +139,26 @@ const form = ref({
 
 const submitted = ref(false)
 const loading = ref(false)
+const loadingAtivo = ref(true)
+
+const carregarAtivo = async () => {
+  try {
+    const ativo = await obterAtivo(ativoId.value)
+    form.value.nome = ativo.nome
+    form.value.mercado = ativo.mercado
+    form.value.codigo = ativo.codigo
+    form.value.timeframe = ativo.timeframe
+  } catch (error) {
+    Toast.open({
+      message: 'Erro ao carregar ativo',
+      type: 'is-danger',
+      duration: 3000
+    })
+    router.push('/ativos')
+  } finally {
+    loadingAtivo.value = false
+  }
+}
 
 const salvarAtivo = async () => {
   submitted.value = true
@@ -158,10 +185,10 @@ const salvarAtivo = async () => {
       formData.append('arquivoCsv', form.value.arquivo)
     }
 
-    await criarAtivo(formData)
+    await editarAtivo(ativoId.value, formData)
 
     Toast.open({
-      message: 'Ativo criado com sucesso!',
+      message: 'Ativo atualizado com sucesso!',
       type: 'is-success',
       duration: 3000
     })
@@ -171,7 +198,7 @@ const salvarAtivo = async () => {
     }, 1000)
   } catch (error: any) {
     Toast.open({
-      message: error.message || 'Erro ao criar ativo',
+      message: error.message || 'Erro ao atualizar ativo',
       type: 'is-danger',
       duration: 5000
     })
@@ -183,4 +210,9 @@ const salvarAtivo = async () => {
 const voltar = () => {
   router.push('/ativos')
 }
+
+onMounted(() => {
+  carregarAtivo()
+})
 </script>
+
