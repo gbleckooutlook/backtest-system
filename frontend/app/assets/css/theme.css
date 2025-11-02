@@ -327,63 +327,100 @@ body {
   color: white !important;
 }
 
-/* ===== DROPDOWN ===== */
+/* ===== SELECT (PrimeVue 4) ===== */
+.p-select,
 .p-dropdown {
   background: var(--surface-100) !important;
   border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius) !important;
+  color: #e6e8eb !important;
+  padding: 0.75rem 1rem !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: var(--transition) !important;
 }
 
+.p-select .p-select-label,
+.p-select .p-placeholder,
 .p-dropdown .p-dropdown-label {
   color: #e6e8eb !important;
+  padding: 0 !important;
+  line-height: 1.5 !important;
 }
 
+.p-select .p-select-dropdown,
+.p-select-trigger,
 .p-dropdown .p-dropdown-trigger {
   color: #e6e8eb !important;
+  width: 2.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-/* Painel do dropdown - fundo escuro sólido */
+/* PAINEL DO SELECT - FUNDO ESCURO */
+.p-select-overlay,
+.p-select-panel,
 .p-dropdown-panel {
-  border-radius: var(--border-radius) !important;
+  background: #1a1f2e !important;
+  background-color: #1a1f2e !important;
+  border-radius: 8px !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
-  border: 1px solid var(--border-color) !important;
-  background-color: #1a1f2e !important;
-  background: #1a1f2e !important;
+  border: 1px solid #2d3548 !important;
 }
 
-/* Container dos itens - fundo escuro sólido */
-.p-dropdown-panel .p-dropdown-items {
-  background-color: #1a1f2e !important;
+/* LISTA DE ITENS DO SELECT */
+.p-select-overlay .p-select-list,
+.p-select-list,
+.p-dropdown-items {
   background: #1a1f2e !important;
+  background-color: #1a1f2e !important;
+  padding: 0.5rem 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
 }
 
-/* Cada item individual - fundo escuro sólido */
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
-  padding: 0.75rem 1rem !important;
-  transition: var(--transition) !important;
+/* CADA ITEM DO SELECT */
+.p-select-option,
+.p-select-list .p-select-option,
+.p-dropdown-item {
+  background: #1a1f2e !important;
+  background-color: #1a1f2e !important;
   color: #e6e8eb !important;
-  background-color: #1a1f2e !important;
-  background: #1a1f2e !important;
+  padding: 0.75rem 1rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+  outline: none !important;
 }
 
-/* Hover nos itens */
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover {
-  background-color: #252d3d !important;
+/* HOVER NOS ITENS DO SELECT */
+.p-select-option:hover,
+.p-select-list .p-select-option:hover,
+.p-dropdown-item:hover {
   background: #252d3d !important;
+  background-color: #252d3d !important;
   color: #ffffff !important;
 }
 
-/* Item selecionado/destacado */
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
-  background-color: var(--primary-color) !important;
-  background: var(--primary-color) !important;
+/* ITEM SELECIONADO DO SELECT */
+.p-select-option.p-select-option-selected,
+.p-select-option[aria-selected="true"],
+.p-dropdown-item.p-highlight {
+  background: #3b82f6 !important;
+  background-color: #3b82f6 !important;
   color: #ffffff !important;
 }
 
-/* Item desabilitado */
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-disabled {
-  opacity: 0.5 !important;
-  background-color: #1a1f2e !important;
-  background: #1a1f2e !important;
+/* ITEM FOCADO DO SELECT */
+.p-select-option:focus,
+.p-select-option.p-focus,
+.p-dropdown-item.p-focus {
+  background: #252d3d !important;
+  background-color: #252d3d !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* ===== UTILITIES ===== */
