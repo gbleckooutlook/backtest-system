@@ -1,0 +1,144 @@
+/* PrimeVue tema personalizado para Backtest CPGR */
+
+:root {
+  --primary-color: #3B82F6;
+  --primary-color-text: #ffffff;
+  --surface-0: #ffffff;
+  --surface-50: #f8f9fa;
+  --surface-100: #f3f4f6;
+  --surface-200: #e5e7eb;
+  --surface-300: #d1d5db;
+  --surface-400: #9ca3af;
+  --surface-500: #6c757d;
+  --surface-600: #4b5563;
+  --surface-700: #374151;
+  --surface-800: #1f2937;
+  --surface-900: #111827;
+  --text-color: #1f2937;
+  --text-color-secondary: #6c757d;
+  --border-radius: 6px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: var(--text-color);
+}
+
+/* Customizações de componentes PrimeVue */
+
+.p-menubar {
+  border-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1px solid var(--surface-200) !important;
+  background: var(--surface-0) !important;
+  padding: 1rem !important;
+}
+
+.p-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border-radius: var(--border-radius) !important;
+  border: 1px solid var(--surface-200) !important;
+  background: var(--surface-0) !important;
+}
+
+.p-card .p-card-body {
+  padding: 1.5rem;
+}
+
+.p-card .p-card-content {
+  padding: 0;
+}
+
+.p-datatable {
+  border-radius: var(--border-radius) !important;
+}
+
+.p-datatable .p-datatable-header {
+  background: var(--surface-50) !important;
+  border-bottom: 2px solid var(--surface-200) !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background-color: var(--surface-50) !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid var(--surface-200) !important;
+  color: var(--text-color) !important;
+  padding: 1rem !important;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  transition: background-color 0.2s;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  background-color: var(--surface-50) !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  padding: 1rem !important;
+  border-bottom: 1px solid var(--surface-100) !important;
+}
+
+.p-button {
+  font-weight: 500 !important;
+  padding: 0.75rem 1.25rem !important;
+  border-radius: var(--border-radius) !important;
+}
+
+.p-button-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.p-button-secondary {
+  background-color: var(--surface-500) !important;
+  border-color: var(--surface-500) !important;
+}
+
+.p-inputtext,
+.p-dropdown {
+  border: 1px solid var(--surface-300) !important;
+  border-radius: var(--border-radius) !important;
+  padding: 0.75rem !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.p-inputtext:enabled:focus,
+.p-dropdown:not(.p-disabled).p-focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+  outline: 0 none !important;
+}
+
+.p-inputtext:enabled:hover,
+.p-dropdown:not(.p-disabled):hover {
+  border-color: var(--surface-400) !important;
+}
+
+.p-invalid.p-component {
+  border-color: #ef4444 !important;
+}
+
+.p-paginator {
+  background: var(--surface-0) !important;
+  border: 1px solid var(--surface-200) !important;
+  border-radius: var(--border-radius) !important;
+  padding: 0.5rem !important;
+}
+
+.p-toast {
+  opacity: 1 !important;
+}
+
+.p-toast .p-toast-message {
+  border-radius: var(--border-radius) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
