@@ -1,203 +1,184 @@
-# Sistema de Backtest CPGR
+# Backtest System - CPGR
 
-Sistema de backtest para operações no mercado financeiro (B3 e Forex) utilizando .NET 8, PostgreSQL, Nuxt 3 e PrimeVue.
+Sistema de backtest para análise de ativos financeiros.
 
-## 🚀 Tecnologias
+## 🚀 Como Rodar o Projeto
 
-### Backend
-- .NET 8 (ASP.NET Core Web API)
-- PostgreSQL 15
-- Dapper (ORM)
-- CsvHelper (processamento de CSV)
+### Pré-requisitos
 
-### Frontend
-- Nuxt 3
-- Vue 3 (Composition API)
-- PrimeVue (componentes UI)
-- TypeScript
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-### Infraestrutura
-- Docker & Docker Compose
-- PostgreSQL com volumes persistentes
+### Primeira Execução
 
-## 📋 Pré-requisitos
+1. **Clone o repositório** (se ainda não fez)
+   ```bash
+   git clone <url-do-repositorio>
+   cd backtest-system
+   ```
 
-- Docker Desktop instalado e em execução
-- Node.js 20+ (para desenvolvimento local)
-- .NET 8 SDK (para desenvolvimento local)
+2. **Suba os containers**
+   
+   **Opção 1 - Script automático (Recomendado):**
+   - **Windows**: Clique duas vezes em `start.bat` ou execute:
+     ```cmd
+     start.bat
+     ```
+   - **Linux/Mac**: Execute:
+     ```bash
+     chmod +x start.sh
+     ./start.sh
+     ```
 
-## 🔧 Instalação e Execução
+   **Opção 2 - Manual:**
+   ```bash
+   docker-compose up -d
+   ```
 
-### Usando Docker Compose (Recomendado)
+   Isso irá:
+   - ✅ Criar o banco de dados PostgreSQL
+   - ✅ Executar automaticamente os scripts de criação das tabelas
+   - ✅ Subir o backend (API .NET 8)
+   - ✅ Subir o frontend (Nuxt 3)
 
-1. Clone o repositório
+3. **Acesse a aplicação**
+   - Frontend: [http://localhost:3001](http://localhost:3001)
+   - Backend API: [http://localhost:5001](http://localhost:5001)
+
+### Comandos Úteis
+
 ```bash
-git clone <url-do-repositorio>
-cd backtest-system
+# Parar os containers
+docker-compose stop
+
+# Parar e remover os containers
+docker-compose down
+
+# Ver logs dos containers
+docker-compose logs -f
+
+# Ver logs de um container específico
+docker-compose logs -f backend
+docker-compose logs -f frontend
+docker-compose logs -f postgres
+
+# Rebuild de um container específico
+docker-compose up -d --build backend
+docker-compose up -d --build frontend
+
+# Limpar tudo (containers, volumes, imagens)
+docker-compose down -v
 ```
 
-2. Suba os containers
+### Verificar se o Banco foi Criado
+
+Para verificar se as tabelas foram criadas corretamente:
+
 ```bash
-docker-compose up --build
+# Conectar ao PostgreSQL
+docker exec -it backtest-postgres psql -U postgres -d backtestdb
+
+# Dentro do psql, listar tabelas
+\dt
+
+# Ver estrutura da tabela Ativos
+\d Ativos
+
+# Ver estrutura da tabela Candles
+\d Candles
+
+# Sair do psql
+\q
 ```
 
-3. Acesse as aplicações:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-- **Swagger**: http://localhost:5000/swagger
+### Resetar o Banco de Dados
 
-### Desenvolvimento Local
+Se precisar resetar o banco de dados completamente:
 
-#### Backend
 ```bash
-cd backend
-dotnet restore
-dotnet run
+# Parar os containers
+docker-compose down
+
+# Remover o volume do banco de dados
+docker volume rm backtest-system_postgres_data
+
+# Subir novamente (irá recriar o banco do zero)
+docker-compose up -d
 ```
 
-#### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
+> **Nota**: O script de inicialização (`docker/postgres/init.sql`) só é executado quando o banco é criado pela primeira vez. Se o volume já existe, o script não será executado novamente.
 
-## 📊 Funcionalidades
-
-### Ativos
-- ✅ Cadastro de ativos (Mini-Dólar, etc.)
-- ✅ Upload de arquivo CSV com candles
-- ✅ Listagem paginada de ativos
-- ✅ Suporte para mercados B3 e Forex
-- ✅ Configuração de timeframes (5min, 15min, etc.)
-
-### Backtest (Em desenvolvimento)
-- 🔄 Criar backtest
-- 🔄 Listar backtests
-- 🔄 Análise de resultados
-
-## 📁 Estrutura de Pastas
+## 📁 Estrutura do Projeto
 
 ```
 backtest-system/
-├── backend/               # API .NET 8
-│   ├── Controllers/       # Endpoints da API
-│   ├── Services/          # Lógica de negócio
-│   ├── Repositories/      # Acesso a dados (Dapper)
-│   ├── Models/            # Entidades
-│   ├── DTOs/              # Data Transfer Objects
-│   └── Database/          # Scripts SQL
-├── frontend/              # Aplicação Nuxt 3
+├── backend/                    # API .NET 8
+│   ├── Controllers/           # Controladores da API
+│   ├── Services/              # Lógica de negócio
+│   ├── Repositories/          # Acesso ao banco de dados
+│   └── Models/                # Modelos de dados
+├── frontend/                   # Nuxt 3 + Buefy
 │   ├── app/
-│   │   ├── pages/        # Páginas da aplicação
-│   │   └── layouts/      # Layouts
-│   ├── composables/       # Composables Vue
-│   └── plugins/           # Plugins Nuxt
-└── docker-compose.yml     # Orquestração Docker
+│   │   ├── pages/            # Páginas da aplicação
+│   │   ├── components/       # Componentes Vue
+│   │   ├── composables/      # Composables (useAtivos, etc)
+│   │   ├── layouts/          # Layouts da aplicação
+│   │   └── plugins/          # Plugins (Buefy)
+│   └── nuxt.config.ts        # Configuração do Nuxt
+├── docker/
+│   └── postgres/
+│       └── init.sql          # Script de inicialização do banco
+├── docker-compose.yml        # Configuração dos containers
+├── start.bat                 # Script de inicialização (Windows)
+├── start.sh                  # Script de inicialização (Linux/Mac)
+├── README.md                 # Este arquivo
+└── TROUBLESHOOTING.md        # Guia de solução de problemas
 ```
 
-## 🗄️ Banco de Dados
+## 🎯 Funcionalidades
 
-### Tabelas
+- ✅ Criar ativos (ações, forex, etc.)
+- ✅ Upload de arquivo CSV com dados históricos (candles)
+- ✅ Listar ativos com paginação
+- ✅ Editar ativos
+- ✅ Deletar ativos (com exclusão em cascata dos candles)
+- ✅ Interface dark theme moderna
 
-#### Ativos
-- Id (PK)
-- Nome
-- Mercado (B3/Forex)
-- Codigo
-- Timeframe
-- NomeArquivoCsv
-- DataCriacao
-
-#### Candles
-- Id (PK)
-- AtivoId (FK)
-- Data
-- Abertura
-- Maxima
-- Minima
-- Fechamento
-- ContadorCandles
-
-## 📄 Formato do CSV
+## 📊 Formato do CSV
 
 O arquivo CSV deve conter as seguintes colunas:
 
 ```
-Data,Abertura,Máxima,Mínima,Fechamento,Contador de Candles
-31/10/2025 18:20,152205,152240,152155,152225,113
-31/10/2025 18:15,152185,152230,152160,152205,112
+Data, Abertura, Máxima, Mínima, Fechamento, Contador de Candles
 ```
 
-## 🔐 Autenticação (Próxima Fase)
-
-- JWT Authentication
-- Roles: Admin e Assinante
-
-## 🛠️ Comandos Úteis
-
-### Docker
-```bash
-# Parar containers
-docker-compose down
-
-# Parar e remover volumes
-docker-compose down -v
-
-# Ver logs
-docker-compose logs -f [service-name]
-
-# Rebuild específico
-docker-compose up --build [service-name]
+Exemplo:
+```csv
+2025-01-01 09:00:00,5000.00,5050.00,4990.00,5025.00,1
+2025-01-01 09:05:00,5025.00,5060.00,5020.00,5055.00,2
 ```
 
-### Backend
-```bash
-# Restaurar pacotes
-dotnet restore
+## 🛠️ Tecnologias
 
-# Build
-dotnet build
+- **Backend**: .NET 8, ASP.NET Core, Dapper, PostgreSQL
+- **Frontend**: Nuxt 3, Vue 3, Buefy, TypeScript
+- **Database**: PostgreSQL 15
+- **Containerização**: Docker, Docker Compose
 
-# Run
-dotnet run
+## 📝 Observações
 
-# Watch (hot reload)
-dotnet watch run
-```
+- ✅ O banco de dados é criado automaticamente na primeira execução
+- ✅ As tabelas são criadas automaticamente pelo script `docker/postgres/init.sql`
+- ✅ Os dados persistem no volume Docker `postgres_data`
+- ✅ Para resetar os dados, remova o volume e suba novamente os containers
+- ✅ O script de inicialização só roda na primeira vez (quando o banco é criado)
 
-### Frontend
-```bash
-# Instalar dependências
-npm install
+## ❓ Problemas?
 
-# Desenvolvimento
-npm run dev
+Consulte o guia de troubleshooting: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
-# Build para produção
-npm run build
-
-# Preview produção
-npm run preview
-```
-
-## 📝 API Endpoints
-
-### Ativos
-- `GET /api/ativos` - Listar ativos (paginado)
-- `POST /api/ativos` - Criar novo ativo com CSV
-- `GET /api/ativos/{id}` - Obter ativo específico
-
-## 🤝 Contribuindo
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
-
-
+Problemas comuns:
+- Porta já em uso
+- Docker não está rodando
+- Banco de dados não foi criado
+- Frontend não carrega
