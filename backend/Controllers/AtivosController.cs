@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using BacktestSystem.DTOs;
-using BacktestSystem.Services;
+using Backend.DTOs;
+using Backend.Services;
 
-namespace BacktestSystem.Controllers;
+namespace Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

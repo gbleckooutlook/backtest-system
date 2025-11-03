@@ -2,18 +2,19 @@
   <div>
     <h1 class="title is-2 mb-5">Listagem de Ativos</h1>
 
-    <b-table
-      :data="ativos"
-      :loading="loading"
-      paginated
-      backend-pagination
-      :total="totalItems"
-      :per-page="pageSize"
-      :current-page="currentPage"
-      @page-change="onPageChange"
-      hoverable
-      striped
-    >
+    <div class="box">
+      <b-table
+        :data="ativos"
+        :loading="loading"
+        paginated
+        backend-pagination
+        :total="totalItems"
+        :per-page="pageSize"
+        :current-page="currentPage"
+        @page-change="onPageChange"
+        hoverable
+        striped
+      >
       <b-table-column field="id" label="ID" width="40" numeric v-slot="props">
         <a @click="editarAtivo(props.row.id)" style="cursor: pointer; color: #3b82f6;">
           {{ props.row.id }}
@@ -54,7 +55,8 @@
       <template #empty>
         <div class="has-text-centered">Nenhum ativo encontrado.</div>
       </template>
-    </b-table>
+      </b-table>
+    </div>
 
     <!-- Botão Flutuante -->
     <button class="fab-button" @click="criarNovoAtivo" title="Criar novo ativo">
@@ -67,7 +69,8 @@
 import type { Ativo, PaginacaoResponse } from '~/composables/useAtivos'
 
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  ssr: false
 })
 
 const router = useRouter()

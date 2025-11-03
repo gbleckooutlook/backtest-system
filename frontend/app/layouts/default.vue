@@ -20,13 +20,24 @@
           </b-navbar-item>
         </b-navbar-dropdown>
 
-        <b-navbar-dropdown label="Backtest">
-          <b-navbar-item disabled>
+        <b-navbar-dropdown label="DayTrade">
+          <b-navbar-item @click="$router.push('/daytrades/criar')">
             <b-icon icon="plus" size="is-small"></b-icon>
             <span class="ml-2">Criar</span>
           </b-navbar-item>
-          <b-navbar-item disabled>
+          <b-navbar-item @click="$router.push('/daytrades')">
             <b-icon icon="format-list-bulleted" size="is-small"></b-icon>
+            <span class="ml-2">Listar</span>
+          </b-navbar-item>
+        </b-navbar-dropdown>
+
+        <b-navbar-dropdown label="Zona de Backtest">
+          <b-navbar-item @click="$router.push('/backtests/criar')">
+            <b-icon icon="calculator-variant" size="is-small"></b-icon>
+            <span class="ml-2">Criar</span>
+          </b-navbar-item>
+          <b-navbar-item @click="$router.push('/backtests')">
+            <b-icon icon="chart-box" size="is-small"></b-icon>
             <span class="ml-2">Listar</span>
           </b-navbar-item>
         </b-navbar-dropdown>

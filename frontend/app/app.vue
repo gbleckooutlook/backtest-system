@@ -206,4 +206,72 @@ html, body {
   background-color: #ffe08a !important;
   color: rgba(0, 0, 0, 0.7) !important;
 }
+
+/* Datepicker Dark Theme */
+.datepicker .dropdown-menu {
+  background-color: var(--surface-dark) !important;
+  border: 1px solid var(--border-dark);
+}
+
+.datepicker .dropdown-content {
+  background-color: var(--surface-dark) !important;
+}
+
+.datepicker .datepicker-header {
+  background-color: #3a3a3a !important;
+  border-bottom: 1px solid var(--border-dark) !important;
+}
+
+.datepicker .datepicker-header .pagination-previous,
+.datepicker .datepicker-header .pagination-next {
+  color: var(--text-light) !important;
+}
+
+.datepicker .datepicker-header .pagination-previous:hover,
+.datepicker .datepicker-header .pagination-next:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.datepicker .datepicker-table .datepicker-header {
+  background-color: transparent !important;
+  border-bottom: none !important;
+}
+
+.datepicker .datepicker-table .datepicker-cell {
+  color: var(--text-light) !important;
+  border: 1px solid transparent;
+}
+
+.datepicker .datepicker-table .datepicker-cell:hover:not(.is-selected):not(.is-disabled) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+}
+
+.datepicker .datepicker-table .datepicker-cell.is-selectable:hover {
+  background-color: rgba(50, 115, 220, 0.3) !important;
+  color: #fff !important;
+}
+
+.datepicker .datepicker-table .datepicker-cell.is-selected {
+  background-color: #3273dc !important;
+  color: white !important;
+}
+
+.datepicker .datepicker-table .datepicker-cell.is-today {
+  border: 1px solid #3273dc !important;
+}
+
+.datepicker .datepicker-table .datepicker-cell.is-unselectable {
+  color: #666 !important;
+}
+
+.datepicker .datepicker-table .datepicker-body .datepicker-row .datepicker-months .datepicker-cell,
+.datepicker .datepicker-table .datepicker-body .datepicker-row .datepicker-years .datepicker-cell {
+  color: var(--text-light) !important;
+}
+
+.datepicker-footer {
+  background-color: #3a3a3a !important;
+  border-top: 1px solid var(--border-dark) !important;
+}
 </style>

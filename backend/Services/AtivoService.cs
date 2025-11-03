@@ -1,11 +1,11 @@
 using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
-using BacktestSystem.Models;
-using BacktestSystem.DTOs;
-using BacktestSystem.Repositories;
+using Backend.Models;
+using Backend.DTOs;
+using Backend.Repositories;
 
-namespace BacktestSystem.Services;
+namespace Backend.Services;
 
 public class AtivoService
 {

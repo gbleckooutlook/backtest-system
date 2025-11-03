@@ -1,9 +1,9 @@
 using Dapper;
 using Npgsql;
-using BacktestSystem.Models;
-using BacktestSystem.DTOs;
+using Backend.Models;
+using Backend.DTOs;
 
-namespace BacktestSystem.Repositories;
+namespace Backend.Repositories;
 
 public class AtivoRepository
 {

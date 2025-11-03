@@ -1,4 +1,4 @@
-namespace BacktestSystem.DTOs;
+namespace Backend.DTOs;
 
 public class PaginacaoDto<T>
 {

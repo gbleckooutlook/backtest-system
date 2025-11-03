@@ -1,4 +1,4 @@
-namespace BacktestSystem.Models;
+namespace Backend.Models;
 
 public class Ativo
 {
