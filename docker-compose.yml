@@ -25,10 +25,12 @@ services:
       dockerfile: Dockerfile
     container_name: backtest-backend
     ports:
-      - "5001:5000"
+      - "55173:5000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=backtestdb;Username=postgres;Password=postgres123
+      - PUBLIC_DOMAIN=${PUBLIC_DOMAIN:-}
+      - FRONTEND_PORT=${FRONTEND_PORT:-5173}
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,9 +43,9 @@ services:
       dockerfile: Dockerfile
     container_name: backtest-frontend
     ports:
-      - "3001:3000"
+      - "5173:3000"
     environment:
-      - NUXT_PUBLIC_API_BASE_URL=http://localhost:5001
+      - NUXT_PUBLIC_API_BASE_URL=http://localhost:55173
     depends_on:
       - backend
     networks:

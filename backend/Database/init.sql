@@ -73,7 +73,6 @@ CREATE TABLE IF NOT EXISTS Backtests (
     NumeroContratos INT NOT NULL,
     AtivoId INT NOT NULL,
     Stop INT NOT NULL,
-    Folga INT NOT NULL,
     Estrategias TEXT NOT NULL,
     Proteger BOOLEAN NOT NULL DEFAULT false,
     Status VARCHAR(20) NOT NULL DEFAULT 'Iniciado',

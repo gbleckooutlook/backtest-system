@@ -194,9 +194,13 @@ public class AtivoService
         if (string.IsNullOrWhiteSpace(value))
             throw new ArgumentException("Valor decimal inválido");
 
-        // Remove espaços e tenta converter
-        value = value.Trim();
+        // Remove espaços e aspas
+        value = value.Trim().Trim('"');
         
+        // Substitui vírgula por ponto (padrão brasileiro → internacional)
+        value = value.Replace(',', '.');
+        
+        // Faz parse com InvariantCulture
         if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
         {
             return result;

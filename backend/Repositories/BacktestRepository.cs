@@ -23,8 +23,8 @@ public class BacktestRepository
     {
         using var connection = GetConnection();
         var sql = @"
-            INSERT INTO Backtests (DataInicio, DataFim, Entrada, Alvo, NumeroContratos, AtivoId, Stop, Folga, Estrategias, Proteger, Status, DataCriacao)
-            VALUES (@DataInicio, @DataFim, @Entrada, @Alvo, @NumeroContratos, @AtivoId, @Stop, @Folga, @Estrategias, @Proteger, @Status, @DataCriacao)
+            INSERT INTO Backtests (DataInicio, DataFim, Entrada, Alvo, NumeroContratos, AtivoId, Stop, Estrategias, Proteger, Status, DataCriacao)
+            VALUES (@DataInicio, @DataFim, @Entrada, @Alvo, @NumeroContratos, @AtivoId, @Stop, @Estrategias, @Proteger, @Status, @DataCriacao)
             RETURNING Id";
         
         var id = await connection.ExecuteScalarAsync<int>(sql, backtest);
@@ -91,6 +91,45 @@ public class BacktestRepository
         using var connection = GetConnection();
         var sql = "DELETE FROM Backtests WHERE Id = @Id";
         await connection.ExecuteAsync(sql, new { Id = id });
+    }
+
+    /// <summary>
+    /// Busca backtests por status específico.
+    /// </summary>
+    public async Task<List<Backtest>> BuscarPorStatusAsync(string status)
+    {
+        using var connection = GetConnection();
+        var sql = @"
+            SELECT b.*, a.Nome as AtivoNome, a.Codigo as AtivoCodigo
+            FROM Backtests b
+            INNER JOIN Ativos a ON b.AtivoId = a.Id
+            WHERE b.Status = @Status
+            ORDER BY b.DataCriacao ASC";
+        
+        var backtests = await connection.QueryAsync<Backtest>(sql, new { Status = status });
+        return backtests.ToList();
+    }
+
+    /// <summary>
+    /// Atualiza resultado e status de um backtest.
+    /// </summary>
+    public async Task AtualizarResultadoAsync(int id, string status, string resultado, DateTime dataFinalizacao)
+    {
+        using var connection = GetConnection();
+        var sql = @"
+            UPDATE Backtests 
+            SET Status = @Status, 
+                DataFinalizacao = @DataFinalizacao,
+                Resultado = @Resultado
+            WHERE Id = @Id";
+        
+        await connection.ExecuteAsync(sql, new 
+        { 
+            Id = id, 
+            Status = status,
+            DataFinalizacao = dataFinalizacao,
+            Resultado = resultado
+        });
     }
 }
 

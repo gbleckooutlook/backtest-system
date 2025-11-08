@@ -126,41 +126,19 @@
           </div>
         </div>
 
-        <!-- Stop e Folga -->
-        <div class="columns">
-          <div class="column is-half">
-            <b-field
-              label="Stop (PTS)"
-              :type="submitted && !form.stop ? 'is-danger' : ''"
-              :message="submitted && !form.stop ? 'Stop é obrigatório' : ''"
-            >
-              <b-input
-                v-model.number="form.stop"
-                type="number"
-                placeholder="Ex: 100"
-                min="0"
-                @input="validarFolga"
-              />
-            </b-field>
-          </div>
-
-          <div class="column is-half">
-            <b-field
-              label="Folga PTS"
-              :type="folgaInvalida ? 'is-danger' : ''"
-              :message="folgaInvalida ? 'Folga deve ser entre 0 e o valor do Stop' : ''"
-            >
-              <b-input
-                v-model.number="form.folga"
-                type="number"
-                placeholder="Ex: 0, 10, 20"
-                min="0"
-                :max="form.stop || 0"
-                @input="validarFolga"
-              />
-            </b-field>
-          </div>
-        </div>
+        <!-- Stop -->
+        <b-field
+          label="Stop (PTS)"
+          :type="submitted && !form.stop ? 'is-danger' : ''"
+          :message="submitted && !form.stop ? 'Stop é obrigatório' : ''"
+        >
+          <b-input
+            v-model.number="form.stop"
+            type="number"
+            placeholder="Ex: 100"
+            min="0"
+          />
+        </b-field>
 
         <!-- Estratégias -->
         <b-field label="Estratégias" class="mt-4">
@@ -246,17 +224,11 @@ const form = ref({
   numeroContratos: null as number | null,
   ativoId: null as number | null,
   stop: null as number | null,
-  folga: null as number | null,
   estrategias: [] as string[],
   proteger: false
 })
 
 const selecionarTodos = ref(false)
-
-const folgaInvalida = computed(() => {
-  if (form.value.folga === null || form.value.stop === null) return false
-  return form.value.folga < 0 || form.value.folga > form.value.stop
-})
 
 const toggleTodasEstrategias = (selecionado: boolean) => {
   if (selecionado) {
@@ -313,16 +285,12 @@ const carregarAtivos = async () => {
   }
 }
 
-const validarFolga = () => {
-  // Validação em tempo real
-}
-
 const salvarBacktest = async () => {
   submitted.value = true
 
   if (!form.value.dataInicio || !form.value.dataFim || !form.value.entrada || 
       !form.value.alvo || !form.value.numeroContratos || !form.value.ativoId || 
-      !form.value.stop || form.value.folga === null) {
+      !form.value.stop) {
     Toast.open({
       message: 'Preencha todos os campos obrigatórios',
       type: 'is-warning',
@@ -349,15 +317,6 @@ const salvarBacktest = async () => {
     return
   }
 
-  if (folgaInvalida.value) {
-    Toast.open({
-      message: 'Folga deve ser entre 0 e o valor do Stop',
-      type: 'is-warning',
-      duration: 3000
-    })
-    return
-  }
-
   loading.value = true
 
   try {
@@ -369,7 +328,6 @@ const salvarBacktest = async () => {
       form.value.numeroContratos,
       form.value.ativoId,
       form.value.stop,
-      form.value.folga,
       form.value.estrategias,
       form.value.proteger
     )
@@ -407,7 +365,6 @@ const criarNovoBacktest = () => {
     numeroContratos: null,
     ativoId: null,
     stop: null,
-    folga: null,
     estrategias: [],
     proteger: false
   }

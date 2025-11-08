@@ -9,7 +9,6 @@ public class CriarBacktestDto
     public int NumeroContratos { get; set; }
     public int AtivoId { get; set; }
     public int Stop { get; set; }
-    public int Folga { get; set; }
     public List<string> Estrategias { get; set; } = new List<string>();
     public bool Proteger { get; set; } = false;
 }

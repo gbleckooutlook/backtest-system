@@ -7,7 +7,6 @@ export interface Backtest {
   numeroContratos: number
   ativoId: number
   stop: number
-  folga: number
   estrategias: string
   proteger: boolean
   ativoNome?: string
@@ -47,7 +46,6 @@ export const useBacktests = () => {
     numeroContratos: number,
     ativoId: number,
     stop: number,
-    folga: number,
     estrategias: string[],
     proteger: boolean
   ) => {
@@ -65,7 +63,6 @@ export const useBacktests = () => {
           numeroContratos,
           ativoId,
           stop,
-          folga,
           estrategias,
           proteger
         }),

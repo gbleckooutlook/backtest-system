@@ -5,6 +5,7 @@ backend/.vs/
 backend/.vscode/
 backend/*.user
 backend/*.suo
+backend/appsettings.Production.json
 
 # Frontend
 frontend/node_modules/

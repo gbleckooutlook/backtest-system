@@ -57,5 +57,42 @@ public class TradeRepository
         var sql = "DELETE FROM Trades WHERE Id = @Id";
         await connection.ExecuteAsync(sql, new { Id = id });
     }
+
+    /// <summary>
+    /// Busca trades em um período específico e filtrados por estratégias.
+    /// Inclui join com DayTrades para pegar a data.
+    /// </summary>
+    public async Task<List<Trade>> BuscarPorPeriodoEEstrategiasAsync(
+        DateTime dataInicio, 
+        DateTime dataFim, 
+        List<string> estrategias,
+        int ativoId)
+    {
+        using var connection = GetConnection();
+        
+        // Se não houver estratégias, retorna vazio
+        if (estrategias == null || estrategias.Count == 0)
+            return new List<Trade>();
+        
+        var sql = @"
+            SELECT t.*, dt.DiaDayTrade
+            FROM Trades t
+            INNER JOIN DayTrades dt ON t.DayTradeId = dt.Id
+            WHERE dt.DiaDayTrade >= @DataInicio 
+              AND dt.DiaDayTrade <= @DataFim
+              AND dt.AtivoId = @AtivoId
+              AND t.Estrategia = ANY(@Estrategias)
+            ORDER BY dt.DiaDayTrade ASC, t.Id ASC";
+        
+        var trades = await connection.QueryAsync<Trade>(sql, new 
+        { 
+            DataInicio = dataInicio.Date, 
+            DataFim = dataFim.Date,
+            AtivoId = ativoId,
+            Estrategias = estrategias.ToArray()
+        });
+        
+        return trades.ToList();
+    }
 }
 

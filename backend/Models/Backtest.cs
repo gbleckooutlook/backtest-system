@@ -10,7 +10,6 @@ public class Backtest
     public int NumeroContratos { get; set; }
     public int AtivoId { get; set; }
     public int Stop { get; set; }
-    public int Folga { get; set; }
     public string Estrategias { get; set; } = "[]"; // JSON array de estratégias
     public bool Proteger { get; set; } = false;
     public string Status { get; set; } = "Iniciado"; // Iniciado, Finalizado, Erro

@@ -27,7 +27,6 @@ public class BacktestService
             NumeroContratos = dto.NumeroContratos,
             AtivoId = dto.AtivoId,
             Stop = dto.Stop,
-            Folga = dto.Folga,
             Estrategias = JsonSerializer.Serialize(dto.Estrategias),
             Proteger = dto.Proteger,
             Status = "Iniciado",
@@ -39,7 +38,7 @@ public class BacktestService
         // Buscar o backtest completo com dados do ativo
         var backtestCompleto = await _repository.ObterBacktestPorIdAsync(resultado.Id);
         
-        _logger.LogInformation($"Backtest criado com sucesso. ID: {resultado.Id}, Estrategias: {string.Join(", ", dto.Estrategias)}, Stop: {dto.Stop}, Folga: {dto.Folga}, Proteger: {dto.Proteger}, Status: Iniciado");
+        _logger.LogInformation($"Backtest criado com sucesso. ID: {resultado.Id}, Estrategias: {string.Join(", ", dto.Estrategias)}, Stop: {dto.Stop}, Proteger: {dto.Proteger}, Status: Iniciado");
         
         // TODO: Aqui você vai adicionar a lógica para processar o backtest em background
         // Por enquanto, só retorna com status "Iniciado"

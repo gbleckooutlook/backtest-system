@@ -1,0 +1,14 @@
+# Docker Compose para PRODUÇÃO (acesso externo via DuckDNS)
+# Use: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  backend:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - PUBLIC_DOMAIN=leandrocpgr.duckdns.org
+      - FRONTEND_PORT=5173
+      
+  frontend:
+    environment:
+      - NUXT_PUBLIC_API_BASE_URL=http://leandrocpgr.duckdns.org:55173
+

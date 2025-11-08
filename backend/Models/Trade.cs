@@ -10,5 +10,8 @@ public class Trade
     public string Operacao { get; set; } = "Compra"; // Compra ou Venda
     public string? Estrategia { get; set; }
     public DateTime DataCriacao { get; set; }
+    
+    // Propriedade auxiliar para JOIN com DayTrade (não está no banco)
+    public DateTime DiaDayTrade { get; set; }
 }
 
