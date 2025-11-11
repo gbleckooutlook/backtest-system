@@ -43,12 +43,21 @@
         {{ new Date(props.row.dataCriacao).toLocaleDateString() }}
       </b-table-column>
 
-      <b-table-column label="Ações" width="80" v-slot="props">
+      <b-table-column label="Ações" width="150" v-slot="props">
+        <b-button
+          type="is-info"
+          size="is-small"
+          icon-left="eye"
+          @click="visualizarCandles(props.row.id)"
+          title="Visualizar candles"
+          class="mr-2"
+        />
         <b-button
           type="is-danger"
           size="is-small"
           icon-left="delete"
           @click="confirmarDeletar(props.row.id, props.row.nome)"
+          title="Deletar ativo"
         />
       </b-table-column>
 
@@ -110,6 +119,10 @@ const criarNovoAtivo = () => {
 
 const editarAtivo = (id: number) => {
   router.push(`/ativos/editar/${id}`)
+}
+
+const visualizarCandles = (id: number) => {
+  router.push(`/ativos/${id}`)
 }
 
 const confirmarDeletar = (id: number, nome: string) => {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Backend.DTOs;
 using Backend.Services;
+using Backend.Repositories;
 
 namespace Backend.Controllers;
 
@@ -9,11 +10,16 @@ namespace Backend.Controllers;
 public class AtivosController : ControllerBase
 {
     private readonly AtivoService _ativoService;
+    private readonly CandleRepository _candleRepository;
     private readonly ILogger<AtivosController> _logger;
 
-    public AtivosController(AtivoService ativoService, ILogger<AtivosController> logger)
+    public AtivosController(
+        AtivoService ativoService, 
+        CandleRepository candleRepository,
+        ILogger<AtivosController> logger)
     {
         _ativoService = ativoService;
+        _candleRepository = candleRepository;
         _logger = logger;
     }
 
@@ -105,6 +111,34 @@ public class AtivosController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao deletar ativo");
+            return StatusCode(500, new { erro = "Erro interno ao processar requisição" });
+        }
+    }
+
+    [HttpGet("{id}/candles")]
+    public async Task<ActionResult> ListarCandlesDoAtivo(
+        int id,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50)
+    {
+        try
+        {
+            var (candles, totalItems) = await _candleRepository.ListarCandlesPorAtivoAsync(id, page, pageSize);
+            
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            return Ok(new
+            {
+                items = candles,
+                totalItems,
+                page,
+                pageSize,
+                totalPages
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao listar candles do ativo");
             return StatusCode(500, new { erro = "Erro interno ao processar requisição" });
         }
     }

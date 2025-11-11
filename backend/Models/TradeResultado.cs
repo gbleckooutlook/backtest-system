@@ -31,6 +31,21 @@ public class TradeResultado
     public string Operacao { get; set; } = string.Empty;
     
     /// <summary>
+    /// Número do candle de Atenção (Gatilho1)
+    /// </summary>
+    public int CandleAtencao { get; set; }
+    
+    /// <summary>
+    /// Número do candle de Confirmação (Gatilho2)
+    /// </summary>
+    public int CandleConfirmacao { get; set; }
+    
+    /// <summary>
+    /// Número do candle de Região (pode ser null)
+    /// </summary>
+    public int? CandleRegiao { get; set; }
+    
+    /// <summary>
     /// Número do candle onde a entrada foi ativada
     /// </summary>
     public int CandleEntrada { get; set; }

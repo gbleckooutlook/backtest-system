@@ -324,6 +324,9 @@
             striped 
             hoverable
             :mobile-cards="false"
+            detailed
+            detail-key="TradeId"
+            :show-detail-icon="true"
           >
             <b-table-column field="Data" label="Data" v-slot="props">
               {{ formatarDataSimples(props.row.Data) }}
@@ -344,10 +347,6 @@
               >
                 {{ props.row.Operacao }}
               </span>
-            </b-table-column>
-
-            <b-table-column field="CandleEntrada" label="Candle" v-slot="props" centered>
-              {{ props.row.CandleEntrada }}
             </b-table-column>
 
             <b-table-column field="PrecoEntrada" label="Entrada" v-slot="props" numeric>
@@ -413,6 +412,56 @@
                 -
               </span>
             </b-table-column>
+
+            <template #detail="props">
+              <div class="detail-container">
+                <div class="columns is-multiline">
+                  <div class="column is-12">
+                    <h4 class="subtitle is-5 mb-3 has-text-white">🎯 Candles de Referência</h4>
+                  </div>
+                  
+                  <div class="column is-3">
+                    <div class="candle-card has-background-info-light">
+                      <p class="candle-label has-text-info">🔔 ATENÇÃO</p>
+                      <p class="candle-number has-text-info">{{ props.row.CandleAtencao }}</p>
+                      <p class="candle-description has-text-grey">Primeiro gatilho</p>
+                    </div>
+                  </div>
+
+                  <div class="column is-3">
+                    <div class="candle-card has-background-success-light">
+                      <p class="candle-label has-text-success">✅ CONFIRMAÇÃO</p>
+                      <p class="candle-number has-text-success">{{ props.row.CandleConfirmacao }}</p>
+                      <p class="candle-description has-text-grey">Segundo gatilho</p>
+                    </div>
+                  </div>
+
+                  <div class="column is-3" v-if="props.row.CandleRegiao">
+                    <div class="candle-card has-background-warning-light">
+                      <p class="candle-label has-text-warning">📍 REGIÃO</p>
+                      <p class="candle-number has-text-warning">{{ props.row.CandleRegiao }}</p>
+                      <p class="candle-description has-text-grey">Pavio de região</p>
+                    </div>
+                  </div>
+
+                  <div class="column is-3" v-else>
+                    <div class="candle-card has-background-light">
+                      <p class="candle-label has-text-grey">📍 REGIÃO</p>
+                      <p class="candle-number has-text-grey">-</p>
+                      <p class="candle-description has-text-grey">Não especificado</p>
+                    </div>
+                  </div>
+
+                  <div class="column is-3">
+                    <div class="candle-card has-background-primary-light">
+                      <p class="candle-label has-text-primary">🚀 ENTRADA</p>
+                      <p class="candle-number has-text-primary">{{ props.row.CandleEntrada }}</p>
+                      <p class="candle-description has-text-grey">Candle que ativou</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
           </b-table>
         </div>
 
@@ -849,4 +898,47 @@ onUnmounted(() => {
   pararPolling()
 })
 </script>
+
+<style scoped>
+.detail-container {
+  background-color: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+}
+
+.candle-card {
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.candle-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.candle-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0.5rem 0;
+  line-height: 1;
+}
+
+.candle-description {
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.2;
+}
+</style>
 

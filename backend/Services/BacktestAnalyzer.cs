@@ -216,6 +216,9 @@ public class BacktestAnalyzer
             Horario = candleEntrada.Data.TimeOfDay,
             Estrategia = trade.Estrategia ?? "Não especificada",
             Operacao = trade.Operacao,
+            CandleAtencao = trade.Gatilho1,
+            CandleConfirmacao = trade.Gatilho2,
+            CandleRegiao = trade.Regiao,
             CandleEntrada = candleEntrada.ContadorCandles,
             PrecoEntrada = precoEntrada
         };
@@ -239,7 +242,13 @@ public class BacktestAnalyzer
 
         // Encontrar índice do candle de entrada
         var indexEntrada = todosCandles.FindIndex(c => c.Id == candleEntrada.Id);
-        var candlesAposEntrada = todosCandles.Skip(indexEntrada + 1).ToList();
+        
+        // IMPORTANTE: Filtrar apenas candles do MESMO DIA do trade
+        var dataDoTrade = candleEntrada.Data.Date;
+        var candlesAposEntrada = todosCandles
+            .Skip(indexEntrada + 1)
+            .Where(c => c.Data.Date == dataDoTrade) // Apenas mesmo dia
+            .ToList();
 
         // Iterar pelos candles após entrada
         foreach (var candle in candlesAposEntrada)
@@ -288,11 +297,25 @@ public class BacktestAnalyzer
             {
                 resultado.Resultado = "Stop";
                 resultado.PrecoSaida = stopAtual;
-                resultado.Pts = -backtest.Stop;
-                resultado.Reais = -backtest.Stop * backtest.NumeroContratos * valorPonto;
+                
+                // Se protegeu breakeven, o resultado é 0 (breakeven)
+                // Caso contrário, é o stop completo
+                if (protegeuBreakeven)
+                {
+                    resultado.Pts = 0;
+                    resultado.Reais = 0;
+                }
+                else
+                {
+                    resultado.Pts = -backtest.Stop;
+                    resultado.Reais = -backtest.Stop * backtest.NumeroContratos * valorPonto;
+                }
+                
+                // Encontrar índice absoluto do candle de stop em todosCandles
+                var indexStop = todosCandles.FindIndex(c => c.Id == candle.Id);
                 
                 // Calcular análise de otimização para stops
-                CalcularMaximaEvolucaoFavor(resultado, todosCandles, indexEntrada, candlesAposEntrada.IndexOf(candle), precoEntrada, trade.Operacao);
+                CalcularMaximaEvolucaoFavor(resultado, todosCandles, indexEntrada, indexStop, precoEntrada, trade.Operacao);
                 
                 break;
             }
@@ -304,9 +327,12 @@ public class BacktestAnalyzer
                 resultado.Pts = backtest.Alvo;
                 resultado.Reais = backtest.Alvo * backtest.NumeroContratos * valorPonto;
                 
+                // Encontrar índice absoluto do candle de alvo em todosCandles
+                var indexAlvo = todosCandles.FindIndex(c => c.Id == candle.Id);
+                
                 // Calcular análises de otimização para gains
-                CalcularMelhorOportunidadeEntrada(resultado, todosCandles, indexEntrada, candlesAposEntrada.IndexOf(candle), precoEntrada, trade.Operacao);
-                CalcularExtensaoAposAlvo(resultado, todosCandles, indexEntrada, candlesAposEntrada.IndexOf(candle), precoAlvo, trade.Operacao);
+                CalcularMelhorOportunidadeEntrada(resultado, todosCandles, indexEntrada, indexAlvo, precoEntrada, trade.Operacao);
+                CalcularExtensaoAposAlvo(resultado, todosCandles, indexEntrada, indexAlvo, precoAlvo, stopAtual, trade.Operacao);
                 
                 break;
             }
@@ -325,17 +351,30 @@ public class BacktestAnalyzer
     /// <summary>
     /// Para trades com Gain: calcula se houve retorno a favor após entrada.
     /// INCLUI o próprio candle de entrada, pois o preço pode descer no mesmo candle.
+    /// IMPORTANTE: Considera apenas candles do MESMO DIA.
     /// </summary>
     private void CalcularMelhorOportunidadeEntrada(
         TradeResultado resultado,
         List<Candle> todosCandles,
         int indexEntrada,
-        int indexSaida,
+        int indexAlvo,
         decimal precoEntrada,
         string operacao)
     {
-        // INCLUI o candle de entrada (indexEntrada) até antes do alvo (indexSaida)
-        var candlesAteAlvo = todosCandles.Skip(indexEntrada).Take(indexSaida + 1).ToList();
+        // Pega o candle de entrada para saber a data do trade
+        var candleEntrada = todosCandles[indexEntrada];
+        var dataDoTrade = candleEntrada.Data.Date;
+        
+        // Calcula quantos candles existem entre entrada e alvo (AMBOS índices absolutos)
+        var quantidadeCandles = indexAlvo - indexEntrada + 1;
+        
+        // INCLUI o candle de entrada até o candle de alvo
+        // Filtra apenas candles do MESMO DIA
+        var candlesAteAlvo = todosCandles
+            .Skip(indexEntrada)
+            .Take(quantidadeCandles)
+            .Where(c => c.Data.Date == dataDoTrade) // Apenas mesmo dia
+            .ToList();
         
         if (candlesAteAlvo.Count == 0) return;
         
@@ -365,25 +404,53 @@ public class BacktestAnalyzer
 
     /// <summary>
     /// Para trades com Gain: calcula quanto o preço continuou após o alvo.
+    /// IMPORTANTE: 
+    /// - Considera o PRÓPRIO CANDLE DO ALVO e os seguintes
+    /// - Considera apenas candles do MESMO DIA
+    /// - Para de contar se o preço voltar para a região do stop/breakeven
     /// </summary>
     private void CalcularExtensaoAposAlvo(
         TradeResultado resultado,
         List<Candle> todosCandles,
         int indexEntrada,
-        int indexSaida,
+        int indexAlvo,
         decimal precoAlvo,
+        decimal stopAtual,
         string operacao)
     {
-        var candlesAposAlvo = todosCandles.Skip(indexEntrada + indexSaida + 1).ToList();
+        // Pega o candle de entrada para saber a data do trade
+        var candleEntrada = todosCandles[indexEntrada];
+        var dataDoTrade = candleEntrada.Data.Date;
         
-        if (candlesAposAlvo.Count == 0) return;
+        // Filtra candles A PARTIR DO ALVO (inclui o candle que atingiu o alvo) e do MESMO DIA
+        var candlesAPartirDoAlvo = todosCandles
+            .Skip(indexAlvo) // INCLUI o candle do alvo
+            .Where(c => c.Data.Date == dataDoTrade) // Apenas mesmo dia
+            .ToList();
+        
+        if (candlesAPartirDoAlvo.Count == 0) return;
 
+        decimal melhorPreco = precoAlvo;
+        
         if (operacao == "Compra")
         {
-            // Maior High após atingir alvo
-            var maiorHigh = candlesAposAlvo.Max(c => c.Maxima);
-            var extensao = maiorHigh - precoAlvo;
+            // Para COMPRA: procura maior High, mas para se voltar para o stop/breakeven
+            foreach (var candle in candlesAPartirDoAlvo)
+            {
+                // Se o preço voltou para o stop/breakeven, para de contar
+                if (candle.Minima <= stopAtual)
+                {
+                    break;
+                }
+                
+                // Atualiza o melhor preço (maior high)
+                if (candle.Maxima > melhorPreco)
+                {
+                    melhorPreco = candle.Maxima;
+                }
+            }
             
+            var extensao = melhorPreco - precoAlvo;
             if (extensao > 0)
             {
                 resultado.ExtensaoAposAlvo = (int)Math.Round(extensao);
@@ -391,10 +458,23 @@ public class BacktestAnalyzer
         }
         else // Venda
         {
-            // Menor Low após atingir alvo
-            var menorLow = candlesAposAlvo.Min(c => c.Minima);
-            var extensao = precoAlvo - menorLow;
+            // Para VENDA: procura menor Low, mas para se voltar para o stop/breakeven
+            foreach (var candle in candlesAPartirDoAlvo)
+            {
+                // Se o preço voltou para o stop/breakeven, para de contar
+                if (candle.Maxima >= stopAtual)
+                {
+                    break;
+                }
+                
+                // Atualiza o melhor preço (menor low)
+                if (candle.Minima < melhorPreco)
+                {
+                    melhorPreco = candle.Minima;
+                }
+            }
             
+            var extensao = precoAlvo - melhorPreco;
             if (extensao > 0)
             {
                 resultado.ExtensaoAposAlvo = (int)Math.Round(extensao);
@@ -404,6 +484,7 @@ public class BacktestAnalyzer
 
     /// <summary>
     /// Para trades com Stop: calcula a máxima evolução a favor antes do stop.
+    /// IMPORTANTE: Considera apenas candles do MESMO DIA.
     /// </summary>
     private void CalcularMaximaEvolucaoFavor(
         TradeResultado resultado,
@@ -413,7 +494,19 @@ public class BacktestAnalyzer
         decimal precoEntrada,
         string operacao)
     {
-        var candlesAteStop = todosCandles.Skip(indexEntrada + 1).Take(indexStop).ToList();
+        // Pega o candle de entrada para saber a data do trade
+        var candleEntrada = todosCandles[indexEntrada];
+        var dataDoTrade = candleEntrada.Data.Date;
+        
+        // Calcula quantos candles existem entre entrada e stop (AMBOS índices absolutos)
+        var quantidadeCandles = indexStop - indexEntrada - 1;
+        
+        // Filtra apenas candles do MESMO DIA entre entrada e stop (não inclui nem entrada nem stop)
+        var candlesAteStop = todosCandles
+            .Skip(indexEntrada + 1)
+            .Take(quantidadeCandles)
+            .Where(c => c.Data.Date == dataDoTrade) // Apenas mesmo dia
+            .ToList();
         
         if (candlesAteStop.Count == 0) return;
 

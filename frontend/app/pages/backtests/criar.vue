@@ -202,19 +202,14 @@ definePageMeta({
   ssr: false
 })
 
+import { ESTRATEGIAS } from '~/constants/estrategias'
+
 const router = useRouter()
 const Toast = useBuefyToast()
 const { listarAtivos } = useAtivos()
 const { criarBacktest } = useBacktests()
 
-const estrategiasDisponiveis = [
-  'Pullback de lado',
-  'Pullback na inversão',
-  'Pullback no 50% macro',
-  'Pullback no 50% micro',
-  'Consolidação',
-  'Quebra micro'
-]
+const estrategiasDisponiveis = [...ESTRATEGIAS]
 
 const form = ref({
   dataInicio: null as Date | null,

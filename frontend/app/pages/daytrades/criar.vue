@@ -169,12 +169,9 @@
                   placeholder="Selecione"
                 >
                   <option value="">Selecione uma estratégia</option>
-                  <option value="Pullback de lado">Pullback de lado</option>
-                  <option value="Pullback na inversão">Pullback na inversão</option>
-                  <option value="Pullback no 50% macro">Pullback no 50% macro</option>
-                  <option value="Pullback no 50% micro">Pullback no 50% micro</option>
-                  <option value="Consolidação">Consolidação</option>
-                  <option value="Quebra micro">Quebra micro</option>
+                  <option v-for="estrategia in estrategiasDisponiveis" :key="estrategia" :value="estrategia">
+                    {{ estrategia }}
+                  </option>
                 </b-select>
               </td>
               <td>
@@ -241,11 +238,14 @@
 <script setup lang="ts">
 import type { Ativo } from '~/composables/useAtivos'
 import type { Trade } from '~/composables/useTrades'
+import { ESTRATEGIAS } from '~/constants/estrategias'
 
 definePageMeta({
   layout: 'default',
   ssr: false
 })
+
+const estrategiasDisponiveis = [...ESTRATEGIAS]
 
 const router = useRouter()
 const Toast = useBuefyToast()

@@ -31,6 +31,10 @@
           {{ props.row.entrada }} PTS
         </b-table-column>
 
+        <b-table-column field="stop" label="Stop" v-slot="props">
+          {{ props.row.stop }} PTS
+        </b-table-column>
+
         <b-table-column field="alvo" label="Alvo" v-slot="props">
           {{ props.row.alvo }} PTS
         </b-table-column>
@@ -61,7 +65,7 @@
         </b-table-column>
 
         <b-table-column field="dataCriacao" label="Data de Criação" v-slot="props">
-          {{ new Date(props.row.dataCriacao).toLocaleDateString() }}
+          {{ formatarDataHora(props.row.dataCriacao) }}
         </b-table-column>
 
         <b-table-column label="Ações" width="120" v-slot="props">
@@ -97,6 +101,15 @@
 
 <script setup lang="ts">
 import type { Backtest, PaginacaoResponse } from '~/composables/useBacktests'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import 'dayjs/locale/pt-br'
+
+// Configurar dayjs
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.locale('pt-br')
 
 definePageMeta({
   layout: 'default',
@@ -178,6 +191,11 @@ const deletar = async (id: number) => {
       duration: 3000
     })
   }
+}
+
+const formatarDataHora = (data: string) => {
+  // Converte UTC para horário de São Paulo (Brasil)
+  return dayjs.utc(data).tz('America/Sao_Paulo').format('DD/MM/YYYY, HH:mm')
 }
 
 const onPageChange = (page: number) => {

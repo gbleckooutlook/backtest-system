@@ -60,5 +60,33 @@ public class CandleRepository
             NumeroCandle = numeroCandle
         });
     }
+
+    /// <summary>
+    /// Busca candles de um ativo com paginação.
+    /// </summary>
+    public async Task<(List<Candle> items, int totalItems)> ListarCandlesPorAtivoAsync(int ativoId, int page, int pageSize)
+    {
+        using var connection = GetConnection();
+        
+        // Conta o total de candles
+        var countSql = "SELECT COUNT(*) FROM Candles WHERE AtivoId = @AtivoId";
+        var totalItems = await connection.ExecuteScalarAsync<int>(countSql, new { AtivoId = ativoId });
+
+        // Busca os candles paginados (mais recente primeiro)
+        var sql = @"
+            SELECT * FROM Candles
+            WHERE AtivoId = @AtivoId
+            ORDER BY Data DESC, ContadorCandles DESC
+            LIMIT @PageSize OFFSET @Offset";
+
+        var candles = await connection.QueryAsync<Candle>(sql, new
+        {
+            AtivoId = ativoId,
+            PageSize = pageSize,
+            Offset = (page - 1) * pageSize
+        });
+
+        return (candles.ToList(), totalItems);
+    }
 }
 

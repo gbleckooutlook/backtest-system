@@ -97,12 +97,23 @@ export const useAtivos = () => {
     }
   }
 
+  const listarCandles = async (ativoId: number, page: number = 1, pageSize: number = 50) => {
+    try {
+      const response = await api<any>(`/api/ativos/${ativoId}/candles?page=${page}&pageSize=${pageSize}`)
+      return response
+    } catch (error) {
+      console.error('Erro ao listar candles:', error)
+      throw error
+    }
+  }
+
   return {
     listarAtivos,
     criarAtivo,
     obterAtivo,
     editarAtivo,
-    deletarAtivo
+    deletarAtivo,
+    listarCandles
   }
 }
 
